@@ -5,6 +5,7 @@ import { account } from "@/config/appwrite.config";
 import { useAuthContext } from "@/context/AuthContext";
 import React from "react";
 import { useRouter } from "next/navigation";
+// import { Loading } from "@/components/others/loader";
 
 type Props = {};
 
@@ -24,11 +25,7 @@ const Dashboard = (props: Props) => {
     }
   };
 
-  return (
-    <div>
-      <Button onClick={handleLogout}>logout</Button>
-    </div>
-  );
+  return <div>h</div>;
 };
 
 export default Dashboard;

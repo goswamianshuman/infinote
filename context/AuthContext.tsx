@@ -1,5 +1,6 @@
 "use client";
 
+import Logo from "@/app/(landing)/_components/logo";
 import { Loading } from "@/components/others/loader";
 import { account } from "@/config/appwrite.config";
 import { useRouter } from "next/navigation";
@@ -27,7 +28,7 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
           setLoading(false);
         })
         .catch((err) => {
-          console.error(err);
+          console.log(err);
           setUser(null);
           router.push("/");
         });
@@ -36,27 +37,16 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
     return () => unsubscribe();
   }, []);
 
-  // React.useEffect(() => {
-  //   const fetchData = () => {
-  //     try {
-  //       if (session) {
-  //         setUser(session);
-  //       } else {
-  //         setUser(null);
-  //       }
-
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching session:", error);
-  //     }
-  //   };
-
-  //   return () => fetchData();
-  // }, []);
-
   return (
     <AuthContext.Provider value={{ user }}>
-      {loading ? <Loading /> : children}
+      {loading ? (
+        <div className="h-full w-full top-0 left-0 bg-background dark:bg-[#121212] flex flex-col items-center justify-center absolute inset-0">
+          <Loading size="icon" />
+          <Logo />
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };
