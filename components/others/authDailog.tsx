@@ -6,37 +6,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { account } from "@/config/appwrite.config";
+import { useToast } from "@/components/ui/use-toast";
+import { signInAccount } from "@/libs/appwrite/api";
 
 type DailogProps = {
   header: React.ReactNode;
 };
 
 export function AuthDailog(props: DailogProps) {
-  const handleGoogleAuth = () => {
-    try {
-      account.createOAuth2Session(
-        "google",
-        "http://localhost:3000/dashboard",
-        "http://localhost:3000/",
-        []
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { toast } = useToast();
 
-  const handleGithubAuth = () => {
-    try {
-      account.createOAuth2Session(
-        "github",
-        "http://localhost:3000/dashboard",
-        "http://localhost:3000/",
-        []
-      );
-    } catch (error) {
-      console.log(error);
-    }
+  const handleGoogleAuth = async () => {
+    await signInAccount({ provider: "google" });
+  };
+  const handleGithubAuth = async () => {
+    await signInAccount({ provider: "github" });
   };
 
   return (

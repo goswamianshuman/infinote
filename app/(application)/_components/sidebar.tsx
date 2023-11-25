@@ -5,6 +5,7 @@ import { ChevronLeftIcon as LeftIcon, MenuIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import UserItem from "./userItem";
 
 type Props = {};
 
@@ -114,7 +115,7 @@ const Sidebar = (props: Props) => {
           <LeftIcon className="h-6 w-6" />
         </div>
         <div>
-          <p>Action items</p>
+          <UserItem />
         </div>
 
         <div className="mt-4">

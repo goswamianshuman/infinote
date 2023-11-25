@@ -3,8 +3,14 @@
 import Logo from "@/app/(landing)/_components/logo";
 import { Loading } from "@/components/others/loader";
 import { account } from "@/config/appwrite.config";
+import {
+  checkExistingUser,
+  createUserAccount,
+  getAccount,
+  getCurrentUser,
+} from "@/libs/appwrite/api";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const AuthContext = React.createContext({});
 
@@ -15,17 +21,38 @@ type AuthProps = {
 };
 
 export const AuthContextProvider = ({ children }: AuthProps) => {
-  const [user, setUser] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  React.useEffect(() => {
+  const fetchData = async ({ res }: { res: any }) => {
+    const userExists = await checkExistingUser({ currentAccount: res });
+    const fetchCurrentUser = await getCurrentUser({ currentAccount: res });
+
+    if (!userExists) {
+      createUserAccount({ currentUser: res }).then((data) => {
+        setUser(data);
+        console.log("posting data: ", data);
+        setLoading(false);
+      });
+    } else {
+      setUser(fetchCurrentUser);
+      console.log("currentUser: ", fetchCurrentUser);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     const unsubscribe = () => {
-      account
-        .getSession("current")
+      getAccount()
         .then((res) => {
           setUser(res);
+          console.log(res);
           setLoading(false);
+
+          if (res?.status) {
+            fetchData({ res });
+          }
         })
         .catch((err) => {
           console.log(err);
