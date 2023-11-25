@@ -46,12 +46,12 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
     const unsubscribe = () => {
       getAccount()
         .then((res) => {
-          setUser(res);
-          console.log(res);
-          setLoading(false);
-
-          if (res?.status) {
+          // console.log("this is response: ", res);
+          if (res) {
             fetchData({ res });
+          } else {
+            setUser(null);
+            router.push("/");
           }
         })
         .catch((err) => {

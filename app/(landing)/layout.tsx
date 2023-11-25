@@ -6,11 +6,9 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Header />
-        {children}
-      </body>
-    </html>
+    <main className="min-h-screen">
+      <Header />
+      {children}
+    </main>
   );
 }
