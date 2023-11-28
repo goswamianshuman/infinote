@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { ThemeProvider } from "../libs/providers/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { ModalProvider } from "@/libs/providers/modal-provider";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Infinote",
@@ -31,7 +32,8 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="the-infinote-theme"
         >
-          <Toaster />
+          <Toaster position="top-center" />
+          <ModalProvider />
           {children}
         </ThemeProvider>
       </body>

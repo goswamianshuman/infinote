@@ -10,11 +10,11 @@ import {
   getCurrentUser,
 } from "@/libs/appwrite/api";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-export const AuthContext = React.createContext({});
+export const AuthContext = createContext({});
 
-export const useAuthContext = () => React.useContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);
 
 type AuthProps = {
   children: React.ReactNode;
@@ -22,6 +22,7 @@ type AuthProps = {
 
 export const AuthContextProvider = ({ children }: AuthProps) => {
   const [user, setUser] = useState<any>(null);
+
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
@@ -32,12 +33,12 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
     if (!userExists) {
       createUserAccount({ currentUser: res }).then((data) => {
         setUser(data);
-        console.log("posting data: ", data);
+        // console.log("posting data: ", data);
         setLoading(false);
       });
     } else {
       setUser(fetchCurrentUser);
-      console.log("currentUser: ", fetchCurrentUser);
+      // console.log("currentUser: ", fetchCurrentUser);
       setLoading(false);
     }
   };

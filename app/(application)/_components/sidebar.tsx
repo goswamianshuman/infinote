@@ -1,23 +1,45 @@
 "use client";
 
 import { cn } from "@/utils/utils";
-import { ChevronLeftIcon as LeftIcon, MenuIcon } from "lucide-react";
+import {
+  ChevronLeftIcon as LeftIcon,
+  MenuIcon,
+  Plus,
+  Search,
+  Settings,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./userItem";
+import { useAuthContext } from "@/context/AuthContext";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { PlusCircle } from "lucide-react";
+import Item from "./item";
+import { onCreate } from "@/utils/actionFunctions";
+import DocumentList from "./documentList";
+import { BsTrash } from "react-icons/bs";
+import TrashBox from "./trashBox";
+import { useSearch } from "@/hooks/useSearch";
+import { useSettings } from "@/hooks/useSettings";
 
 type Props = {};
 
 const Sidebar = (props: Props) => {
+  const { user }: any = useAuthContext();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
-
   const isResizeRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"header">>(null);
   const [reset, setReset] = useState(false);
   const [collapsed, setCollapsed] = useState(isMobile);
+  const search = useSearch();
+  const settings = useSettings();
 
   useEffect(() => {
     if (isMobile) {
@@ -94,12 +116,16 @@ const Sidebar = (props: Props) => {
     }
   };
 
+  const handleCreate = () => {
+    onCreate({ user_id: user?.$id, title: "Untitled" });
+  };
+
   return (
     <>
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/sidebar h-full bg-secondary/40 overflow-y-auto relative flex w-60 flex-col z-[99999]",
+          "group/sidebar h-full bg-primary/5 overflow-y-auto relative flex w-60 flex-col z-[99999]",
           reset && "transition-all ease-linear duration-300",
           isMobile && "w-0"
         )}
@@ -108,18 +134,37 @@ const Sidebar = (props: Props) => {
           onClick={handleCollapse}
           role="button"
           className={cn(
-            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-stone-300 dark:hover:bg-stone-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition cursor-pointer",
+            "h-6 w-6 text-muted-foreground rounded-sm hover:bg-primary/10 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition cursor-pointer",
             isMobile && "opacity-100"
           )}
         >
           <LeftIcon className="h-6 w-6" />
         </div>
+
         <div>
           <UserItem />
+          <Item icon={Search} label="Search" isSearch onClick={search.onOpen} />
+          <Item icon={Settings} label="Settings" onClick={settings.onOpen} />
+          <Item onClick={handleCreate} label="New Page" icon={PlusCircle} />
         </div>
 
         <div className="mt-4">
-          <p>Documents</p>
+          <p>
+            <DocumentList />
+            <Item onClick={handleCreate} icon={Plus} label="Add a Page" />
+
+            <Popover>
+              <PopoverTrigger className="w-full mt-4">
+                <Item icon={BsTrash} label="Trash" />
+              </PopoverTrigger>
+              <PopoverContent
+                side={isMobile ? "bottom" : "right"}
+                className="p-0 w-72"
+              >
+                <TrashBox />
+              </PopoverContent>
+            </Popover>
+          </p>
         </div>
 
         <div

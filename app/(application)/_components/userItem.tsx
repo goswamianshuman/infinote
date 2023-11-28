@@ -72,8 +72,9 @@ const UserItem = (props: Props) => {
         <DropdownMenuItem>
           <Button
             onClick={() => {
-              signOutAccount();
-              router.push("/");
+              signOutAccount().then((res) => {
+                if (res) router.push("/");
+              });
             }}
             variant="ghost"
             className="w-full h-full"

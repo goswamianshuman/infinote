@@ -1,13 +1,13 @@
 "use client";
 
-import { account } from "@/config/appwrite.config";
 import { useAuthContext } from "@/context/AuthContext";
 import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BsPlusCircle } from "react-icons/bs";
-// import { Loading } from "@/components/others/loader";
+import { onCreate } from "@/utils/actionFunctions";
+import { getUserDocuments } from "@/libs/appwrite/api";
 
 type Props = {};
 
@@ -15,16 +15,8 @@ const Dashboard = (props: Props) => {
   const { user }: any = useAuthContext();
   const router = useRouter();
 
-  console.log(user);
-
-  const handleLogout = () => {
-    try {
-      account.deleteSession(user.$id).then((res) => {
-        if (res) router.push("/");
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const handleCreate = () => {
+    onCreate({ user_id: user?.$id, title: "Untitled" });
   };
 
   return (
@@ -37,12 +29,16 @@ const Dashboard = (props: Props) => {
         className="object-center object-contain"
       />
 
-      <h2 className="text-lg font-medium text-center max-w-[80%]">
+      <h2 className="text-lg md:text-2xl font-medium text-center max-w-[80%]">
         Explore the endless possibilities at{" "}
         <span className="text-[#C024D6] underline">{user?.name}&apos;s</span>{" "}
         Infinote.
       </h2>
-      <Button className="flex items-center justify-center gap-3 mx-auto">
+
+      <Button
+        onClick={handleCreate}
+        className="flex items-center justify-center gap-3 mx-auto"
+      >
         <BsPlusCircle className="h-4 w-4" />
         create a note
       </Button>

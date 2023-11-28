@@ -5,9 +5,8 @@ export const appwriteConfig = {
   projectId: "655f0003e0d13482a2be",
   databaseId: "656180c4ba7b8e527bef",
   usersCollectionId: "6561811dd90e093b4f39",
-  trashCollectionId: "65618746388dcfacd278",
   documentsCollectionId: "656180e23579115ebcc1",
-  userMediaId: "656180531ea81fd1bc70",
+  storageId: "656180531ea81fd1bc70",
 };
 
 const client = new Client()

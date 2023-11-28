@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
 import { signInAccount } from "@/libs/appwrite/api";
 
 type DailogProps = {
@@ -14,8 +13,6 @@ type DailogProps = {
 };
 
 export function AuthDailog(props: DailogProps) {
-  const { toast } = useToast();
-
   const handleGoogleAuth = async () => {
     await signInAccount({ provider: "google" });
   };
