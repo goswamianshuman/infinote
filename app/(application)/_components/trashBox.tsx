@@ -80,15 +80,12 @@ const TrashBox = (props: Props) => {
         console.error(error);
       } finally {
         setLoading(false);
+        // setTriggerEffect((prev) => !prev);
       }
     };
 
     fetchData();
-
-    return () => {
-      fetchData();
-    };
-  }, [search.length === 0, search, triggerEffect]);
+  }, [search, triggerEffect]);
 
   return (
     <div className="text-sm">
