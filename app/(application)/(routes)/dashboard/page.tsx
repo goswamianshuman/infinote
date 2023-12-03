@@ -7,16 +7,18 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BsPlusCircle } from "react-icons/bs";
 import { onCreate } from "@/utils/actionFunctions";
-import { getUserDocuments } from "@/libs/appwrite/api";
+import { useTrigger } from "@/hooks/useTrigger";
 
 type Props = {};
 
 const Dashboard = (props: Props) => {
   const { user }: any = useAuthContext();
   const router = useRouter();
+  const trigger = useTrigger();
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     onCreate({ user_id: user?.$id, title: "Untitled" });
+    trigger.activate();
   };
 
   return (

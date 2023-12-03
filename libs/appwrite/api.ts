@@ -95,8 +95,6 @@ export async function getCurrentUser({
 
     if (!currentUser) throw Error;
 
-    // console.log(currentUser.documents[0]);
-
     return currentUser.documents[0];
   } catch (error) {
     console.error(error);
@@ -123,49 +121,23 @@ export type NewDocProp = {
   userId: string;
   title: string;
   coverImage?: File[];
+  coverImageId?: string;
   content?: string;
   isArchived?: boolean;
   parentDocument?: string;
   isPublished?: boolean;
   icon?: string;
-  coverImageId?: string;
 };
 
 export async function createDocument(doc: NewDocProp) {
   try {
-    // if (!doc.file || !doc.file[0]) {
-    //   throw new Error("File is undefined or empty.");
-    // }
-
-    let imageUrl = null;
-    let fileId = "";
-
-    if (doc.coverImage) {
-      const fileUpload = await uploadFile(doc.coverImage[0]);
-      if (!fileUpload) {
-        throw new Error("File upload failed.");
-      }
-
-      const fileUrl = getFilePreview(fileUpload.$id);
-
-      if (!fileUrl) {
-        await deleteFile(fileUpload.$id);
-        throw Error;
-      }
-
-      imageUrl = fileUrl;
-      fileId = fileUpload.$id;
-    }
-
-    // create a document
     const newDoc = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.documentsCollectionId,
       ID.unique(),
       {
         doc_creator: doc.userId,
-
-        coverImage: imageUrl, //set here url
+        coverImage: doc.coverImage, //set here url
         title: doc.title,
         content: doc.content,
         isArchived: doc.isArchived,
@@ -176,58 +148,10 @@ export async function createDocument(doc: NewDocProp) {
       }
     );
 
-    if (!newDoc) {
-      await deleteFile(fileId);
-      throw Error;
-    }
-
     return newDoc;
   } catch (error) {
     console.log(error);
     return;
-  }
-}
-
-export async function uploadFile(file: File) {
-  try {
-    const uploadFile = await storage.createFile(
-      appwriteConfig.storageId,
-      ID.unique(),
-      file
-    );
-
-    return uploadFile;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export function getFilePreview(fileId: string) {
-  try {
-    const fileUrl = storage.getFilePreview(
-      appwriteConfig.storageId,
-      fileId,
-      2000,
-      2000,
-      "top",
-      100
-    );
-
-    if (!fileUrl) throw Error;
-
-    return fileUrl;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function deleteFile(fileId: string) {
-  try {
-    await storage.deleteFile(appwriteConfig.storageId, fileId);
-
-    return { status: "ok" };
-  } catch (error) {
-    console.log(error);
   }
 }
 
@@ -284,17 +208,34 @@ export async function getSidebarParentDoc(
   }
 }
 
-export async function getDocumentbyId(DocId?: string) {
-  if (!DocId) throw Error;
+export async function getDocumentbyId(documentId?: string) {
+  if (!documentId) throw Error;
 
   try {
+    const getAcc = await getAccount();
+    const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
     const document = await databases.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.documentsCollectionId,
-      DocId
+      documentId
     );
 
-    if (!document) throw Error;
+    if (!document) {
+      throw new Error("Not found");
+    }
+
+    if (document.isPublished && !document.isArchived) {
+      return document;
+    }
+
+    if (!currentUser) throw Error;
+
+    const userId = currentUser.$id;
+
+    if (document.doc_creator.$id !== userId) {
+      throw new Error("Unauthorized");
+    }
 
     return document;
   } catch (error) {
@@ -501,4 +442,220 @@ export async function getDocumentForSearching() {
   if (!doc) throw Error;
 
   return doc.documents;
+}
+
+// export async function getDocByIdMain(documentId: string) {
+//   try {
+//     const getAcc = await getAccount();
+//     const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
+//     const document = await databases.getDocument(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.documentsCollectionId,
+//       documentId
+//     );
+
+//     if (!document) {
+//       throw new Error("Not found");
+//     }
+
+//     if (document.isPublished && !document.isArchived) {
+//       return document;
+//     }
+
+//     if (!currentUser) throw Error;
+
+//     const userId = currentUser.$id;
+
+//     if (document.doc_creator !== userId) {
+//       throw new Error("Unauthorized");
+//     }
+
+//     return document;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+type UpdateProps = {
+  documentId: string;
+  title?: string;
+  content?: string;
+  coverImage?: string;
+  icon?: string;
+  isPublished?: boolean;
+};
+
+export async function updateDocument(props: UpdateProps) {
+  try {
+    const getAcc = await getAccount();
+    const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
+    if (!currentUser) throw Error;
+
+    const userId = currentUser.$id;
+
+    const { documentId, ...rest } = props;
+
+    const existingDocument = await getDocumentbyId(documentId);
+
+    if (!existingDocument) {
+      throw new Error("Not found");
+    }
+
+    if (existingDocument.doc_creator.$id !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const document = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.documentsCollectionId,
+      documentId,
+      {
+        ...rest,
+      }
+    );
+
+    return document;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function removeIcon(documentId: string) {
+  try {
+    const getAcc = await getAccount();
+    const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
+    if (!currentUser) throw Error;
+
+    const userId = currentUser.$id;
+
+    const existingDocument = await getDocumentbyId(documentId);
+
+    if (!existingDocument) {
+      throw new Error("Not found");
+    }
+
+    if (existingDocument.doc_creator.$id !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const document = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.documentsCollectionId,
+      documentId,
+      {
+        icon: null,
+      }
+    );
+
+    return document;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function uploadFile(file: File) {
+  try {
+    const getAcc = await getAccount();
+    const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
+    if (!currentUser) throw Error;
+
+    const uploadedFile = await storage.createFile(
+      appwriteConfig.storageId,
+      ID.unique(),
+      file
+    );
+
+    return uploadedFile;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export function getFilePreview(fileId: string) {
+  try {
+    const fileUrl = storage.getFilePreview(
+      appwriteConfig.storageId,
+      fileId,
+      2000,
+      2000,
+      "top",
+      100
+    );
+
+    if (!fileUrl) throw Error;
+
+    return fileUrl;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteFile(documentId: string, fileId: string) {
+  try {
+    await storage.deleteFile(appwriteConfig.storageId, fileId);
+
+    const document = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.documentsCollectionId,
+      documentId,
+      {
+        coverImage: null,
+        coverImageId: null,
+      }
+    );
+
+    return document;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function uploadFileToDoc(documentId: string, file: File) {
+  try {
+    const getAcc = await getAccount();
+    const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
+    if (!currentUser) throw Error;
+
+    const userId = currentUser.$id;
+
+    const existingDocument = await getDocumentbyId(documentId);
+
+    if (!existingDocument) {
+      throw new Error("Not found");
+    }
+
+    if (existingDocument.doc_creator.$id !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const uploadedFile = await uploadFile(file);
+
+    if (!uploadedFile) throw Error;
+
+    const fileUrl = getFilePreview(uploadedFile.$id);
+
+    if (!fileUrl) {
+      await deleteFile(existingDocument.$id, uploadedFile.$id);
+      throw Error;
+    }
+
+    const document = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.documentsCollectionId,
+      documentId,
+      {
+        coverImage: fileUrl,
+        coverImageId: uploadedFile.$id,
+      }
+    );
+
+    return document;
+  } catch (error) {
+    console.log(error);
+  }
 }

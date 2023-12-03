@@ -27,6 +27,8 @@ import TrashBox from "./trashBox";
 import { useSearch } from "@/hooks/useSearch";
 import { useSettings } from "@/hooks/useSettings";
 import Navbar from "./navbar";
+import { getDocumentbyId } from "@/libs/appwrite/api";
+import { useTrigger } from "@/hooks/useTrigger";
 
 type Props = {};
 
@@ -40,8 +42,10 @@ const Sidebar = (props: Props) => {
   const navbarRef = useRef<ElementRef<"header">>(null);
   const [reset, setReset] = useState(false);
   const [collapsed, setCollapsed] = useState(isMobile);
+  const [doc, setDoc] = useState<any>([]);
   const search = useSearch();
   const settings = useSettings();
+  const trigger = useTrigger();
 
   useEffect(() => {
     if (isMobile) {
@@ -56,6 +60,15 @@ const Sidebar = (props: Props) => {
       handleCollapse();
     }
   }, [pathname, isMobile]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const document = await getDocumentbyId(params.documentId as string);
+      setDoc(document);
+    };
+
+    fetchData();
+  }, [trigger.active]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
@@ -120,6 +133,7 @@ const Sidebar = (props: Props) => {
 
   const handleCreate = () => {
     onCreate({ user_id: user?.$id, title: "Untitled" });
+    trigger.activate();
   };
 
   return (
@@ -156,7 +170,12 @@ const Sidebar = (props: Props) => {
             <Item onClick={handleCreate} icon={Plus} label="Add a Page" />
 
             <Popover>
-              <PopoverTrigger className="w-full mt-4">
+              <PopoverTrigger
+                onClick={() => {
+                  trigger.activate();
+                }}
+                className="w-full mt-4"
+              >
                 <Item icon={BsTrash} label="Trash" />
               </PopoverTrigger>
               <PopoverContent
@@ -185,7 +204,7 @@ const Sidebar = (props: Props) => {
         )}
       >
         {!!params.documentId ? (
-          <Navbar isCollapsed={collapsed} onResetWidth={resetWidth} />
+          <Navbar doc={doc} isCollapsed={collapsed} onResetWidth={resetWidth} />
         ) : (
           <nav className="bg-transparent px-3 py-2 w-full">
             {collapsed && (

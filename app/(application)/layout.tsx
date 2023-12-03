@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AuthContextProvider } from "@/context/AuthContext";
 import Sidebar from "./_components/sidebar";
 import SearchCommand from "@/components/others/searchCommand";

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthContext } from "@/context/AuthContext";
+import { useTrigger } from "@/hooks/useTrigger";
 import {
   createDocument,
   getDocumentbyId,
@@ -54,6 +55,7 @@ const Item = ({
 }: Props) => {
   const { user }: any = useAuthContext();
   const router = useRouter();
+  const trigger = useTrigger();
 
   // expand function
   const handleExpand = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -68,7 +70,9 @@ const Item = ({
 
     if (!documentId) return;
 
-    const promise = setDocumentAsArchive(documentId);
+    const promise = setDocumentAsArchive(documentId).then(() => {
+      trigger.activate();
+    });
 
     toast.promise(promise, {
       loading: "Moving to trash... 🙂",
@@ -91,8 +95,8 @@ const Item = ({
     }).then((doc) => {
       if (!expanded) {
         onExpand?.();
+        trigger.activate();
       }
-
       // router.push(`/dashboard/documents/${doc?.$id}`);
     });
 
@@ -157,7 +161,7 @@ const Item = ({
               forceMount
             >
               <DropdownMenuItem
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 cursor-pointer"
                 onClick={handleArchive}
               >
                 <BsTrash className="h-4 w-4 mr-2" />

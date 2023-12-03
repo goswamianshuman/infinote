@@ -4,6 +4,7 @@ import ConfirmDailog from "@/components/others/confirmDailog";
 import { Loading } from "@/components/others/loader";
 import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/context/AuthContext";
+import { useTrigger } from "@/hooks/useTrigger";
 import {
   getTrashDocument,
   removeDocument,
@@ -23,7 +24,7 @@ const TrashBox = (props: Props) => {
   const params = useParams();
   const [filterDoc, setFilterDoc] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [triggerEffect, setTriggerEffect] = useState(false);
+  const trigger = useTrigger();
   const [search, setSearch] = useState("");
 
   const handleClick = (documentId: string) => {
@@ -35,19 +36,21 @@ const TrashBox = (props: Props) => {
     documentId: string
   ) => {
     e.stopPropagation();
-    const restore = restoreDocument(documentId);
+    const restore = restoreDocument(documentId).then(() => {
+      trigger.activate();
+    });
 
     toast.promise(restore, {
       loading: "Restoring note... ⏪",
       success: "Note restored successfully! 📓",
       error: "Failed to restore note 😢",
     });
-
-    setTriggerEffect((prev) => !prev);
   };
 
   const handleRemove = async (documentId: string) => {
-    const documents = removeDocument(documentId);
+    const documents = removeDocument(documentId).then(() => {
+      trigger.activate();
+    });
 
     toast.promise(documents, {
       loading: "deleting note permanently... ⏪",
@@ -55,16 +58,14 @@ const TrashBox = (props: Props) => {
       error: "Failed to delete note 😢",
     });
 
-    setTriggerEffect((prev) => !prev);
-
     if (params.documentId === documentId) {
       router.push("/dashboard");
     }
   };
 
-  if (user?.documents.length === 0 || user?.documents === undefined) {
+  if (user?.documents === undefined) {
     return (
-      <div className="hfull flex items-center justify-center p-4">
+      <div className="hfull flex flex-col items-center justify-center p-4">
         <Loading size="large" />
       </div>
     );
@@ -80,12 +81,11 @@ const TrashBox = (props: Props) => {
         console.error(error);
       } finally {
         setLoading(false);
-        // setTriggerEffect((prev) => !prev);
       }
     };
 
     fetchData();
-  }, [search, triggerEffect]);
+  }, [trigger.active]);
 
   return (
     <div className="text-sm">

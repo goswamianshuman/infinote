@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import Item from "./item";
 import { cn } from "@/utils/utils";
 import { FileIcon } from "lucide-react";
+import { useTrigger } from "@/hooks/useTrigger";
 
 type Props = {
   parentDocumentId?: string;
@@ -16,7 +17,10 @@ type Props = {
 const DocumentList = ({ parentDocumentId, level = 0 }: Props) => {
   const params = useParams();
   const router = useRouter();
+  const trigger = useTrigger();
+
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
   const [getDoc, setDoc] = useState<any>();
 
   const onExpand = (documentId: string) => {
@@ -37,14 +41,11 @@ const DocumentList = ({ parentDocumentId, level = 0 }: Props) => {
     };
 
     fetchData();
-  });
-
-  // getSidebarParentDoc(parentDocumentId)
-  //   .then((res) => setDoc(res))
-  //   .catch((err) => console.log(err));
+  }, [trigger.active]);
 
   const onRedirect = (documentId: string) => {
     router.push(`/dashboard/documents/${documentId}`);
+    trigger.activate();
   };
 
   if (getDoc == undefined) {
