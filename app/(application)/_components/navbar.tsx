@@ -7,14 +7,27 @@ import React, { useEffect, useState } from "react";
 import Title from "./title";
 import Banner from "./banner";
 import Menu from "./menu";
+import { useTrigger } from "@/hooks/useTrigger";
 
 type Props = {
   isCollapsed: boolean;
-  doc: any;
   onResetWidth: () => void;
 };
 
-const Navbar = ({ doc, isCollapsed, onResetWidth }: Props) => {
+const Navbar = ({ isCollapsed, onResetWidth }: Props) => {
+  const params = useParams();
+  const trigger = useTrigger();
+  const [doc, setDoc] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const document = await getDocumentbyId(params.documentId as string);
+      setDoc(document);
+    };
+
+    fetchData();
+  }, [params.documentId, trigger.active]);
+
   if (doc?.length === 0 || doc === undefined) {
     return (
       <nav className="bg-background dark:bg-[#121212] px-3 py-2 w-full flex items-center justify-between">

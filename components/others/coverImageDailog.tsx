@@ -5,9 +5,10 @@ import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { useCoverImage } from "@/hooks/useCoverImage";
 import ImageUploader from "./imageUploader";
 import { useParams } from "next/navigation";
-import { uploadFileToDoc } from "@/libs/appwrite/api";
+import { replaceFileInDoc, uploadFileToDoc } from "@/libs/appwrite/api";
 import { toast } from "sonner";
 import { useTrigger } from "@/hooks/useTrigger";
+import { Models } from "appwrite";
 
 type Props = {};
 
@@ -17,15 +18,25 @@ const CoverImageDailog = (props: Props) => {
   const params = useParams();
 
   const handleFileUpload = (file: File | null) => {
-    const upload = uploadFileToDoc(
-      params.documentId as string,
-      file as File
-    ).then(() => {
-      trigger.activate();
-      coverImage.onClose;
-    });
+    let upload;
 
-    toast.promise(upload, {
+    if (coverImage.url) {
+      upload = replaceFileInDoc(params.documentId as string, file as File).then(
+        () => {
+          trigger.activate();
+          coverImage.onClose;
+        }
+      );
+    } else {
+      upload = uploadFileToDoc(params.documentId as string, file as File).then(
+        () => {
+          trigger.activate();
+          coverImage.onClose;
+        }
+      );
+    }
+
+    toast.promise(upload as Promise<Models.Document | undefined>, {
       loading: "uploading image... 💭",
       success: "image uploaded successfully! 📓",
       error: "Failed to upload title 😢",

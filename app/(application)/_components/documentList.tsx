@@ -45,7 +45,6 @@ const DocumentList = ({ parentDocumentId, level = 0 }: Props) => {
 
   const onRedirect = (documentId: string) => {
     router.push(`/dashboard/documents/${documentId}`);
-    trigger.activate();
   };
 
   if (getDoc == undefined) {

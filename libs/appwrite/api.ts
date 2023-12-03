@@ -659,3 +659,32 @@ export async function uploadFileToDoc(documentId: string, file: File) {
     console.log(error);
   }
 }
+
+export async function replaceFileInDoc(documentId: string, file: File) {
+  const getAcc = await getAccount();
+  const currentUser = await getCurrentUser({ currentAccount: getAcc });
+
+  if (!currentUser) throw Error;
+
+  const userId = currentUser.$id;
+
+  const existingDocument = await getDocumentbyId(documentId);
+
+  if (!existingDocument) {
+    throw new Error("Not found");
+  }
+
+  if (existingDocument.doc_creator.$id !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  if (!existingDocument.coverImage && !existingDocument.coverImageId) {
+    throw new Error("No document exists");
+  }
+
+  await deleteFile(existingDocument.$id, existingDocument.coverImageId);
+
+  const document = await uploadFileToDoc(documentId, file);
+
+  return document;
+}
