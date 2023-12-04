@@ -27,6 +27,18 @@ const TrashBox = (props: Props) => {
   const trigger = useTrigger();
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    setLoading(true);
+    searchDocumentByName(search)
+      .then((res) => {
+        setFilterDoc(res);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [search, trigger.active]);
+
   const handleClick = (documentId: string) => {
     router.push(`/dashboard/documents/${documentId}`);
   };
@@ -72,18 +84,6 @@ const TrashBox = (props: Props) => {
       </div>
     );
   }
-
-  useEffect(() => {
-    setLoading(true);
-    searchDocumentByName(search)
-      .then((res) => {
-        setFilterDoc(res);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [search, trigger.active]);
 
   return (
     <div className="text-sm">
