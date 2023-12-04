@@ -21,7 +21,7 @@ export default function DocumentLayout({
     };
 
     checkExistingDoc();
-  }, []);
+  }, [params.documentId]);
 
   return <main>{children}</main>;
 }

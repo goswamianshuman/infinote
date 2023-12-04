@@ -35,7 +35,7 @@ const PreviewPage = () => {
     };
 
     fetchData();
-  }, [trigger.active]);
+  }, [params.documentId, trigger.active]);
 
   if (doc?.length === 0) {
     return (

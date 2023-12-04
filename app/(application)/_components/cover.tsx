@@ -30,7 +30,7 @@ const Cover = ({ preview, url }: Props) => {
     };
 
     fetchData();
-  }, [trigger.active]);
+  }, [params.documentId, trigger.active]);
 
   const handleDelete = () => {
     deleteFile(params.documentId as string, doc.coverImageId as string).then(
