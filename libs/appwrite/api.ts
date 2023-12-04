@@ -11,8 +11,8 @@ export function signInAccount({ provider }: { provider: string }) {
   try {
     const session = account.createOAuth2Session(
       provider,
-      `https://infi-note.vercel.app/dashboard`,
-      `https://infi-note.vercel.app/`,
+      "https://infi-note.vercel.app/dashboard",
+      "https://infi-note.vercel.app/",
       []
     );
 
