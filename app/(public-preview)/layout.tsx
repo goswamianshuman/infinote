@@ -5,7 +5,7 @@ type Props = {
 };
 
 const PreviewLayout = (props: Props) => {
-  return <div className="h-full dark:bg-[#1F1F1F]">{props.children}</div>;
+  return <div className="dark:bg-[#1F1F1F]">{props.children}</div>;
 };
 
 export default PreviewLayout;

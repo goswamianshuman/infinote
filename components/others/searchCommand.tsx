@@ -14,6 +14,7 @@ import {
 import { useSearch } from "@/hooks/useSearch";
 import { useAuthContext } from "@/context/AuthContext";
 import { getDocumentForSearching } from "@/libs/appwrite/api";
+import { useTrigger } from "@/hooks/useTrigger";
 
 type Props = {};
 
@@ -22,6 +23,7 @@ const SearchCommand = (props: Props) => {
   const router = useRouter();
   const [mounted, setIsmounted] = useState(false);
   const [docs, setDocs] = useState<any>([]);
+  const trigger = useTrigger();
   const toggle = useSearch((store) => store.toggle);
   const isOpen = useSearch((store) => store.isOpen);
   const onClose = useSearch((store) => store.onClose);
@@ -33,6 +35,7 @@ const SearchCommand = (props: Props) => {
 
   useEffect(() => {
     setIsmounted(true);
+    trigger.activate();
   }, []);
 
   useEffect(() => {
@@ -42,11 +45,7 @@ const SearchCommand = (props: Props) => {
     };
 
     fetchdata();
-
-    return () => {
-      fetchdata();
-    };
-  }, [mounted, toggle]);
+  }, [mounted, toggle, trigger.active]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
