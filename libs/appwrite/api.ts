@@ -7,12 +7,12 @@ import {
 } from "@/config/appwrite.config";
 import { ID, Query, QueryTypes } from "appwrite";
 
-export async function signInAccount({ provider }: { provider: string }) {
+export function signInAccount({ provider }: { provider: string }) {
   try {
-    const session = await account.createOAuth2Session(
+    const session = account.createOAuth2Session(
       provider,
-      "http://localhost:3000/dashboard",
-      "http://localhost:3000/",
+      `${process.env.NEXT_PUBLIC_WEBSITE_URL}/dashboard`,
+      `${process.env.NEXT_PUBLIC_WEBSITE_URL}/`,
       []
     );
 

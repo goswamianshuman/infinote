@@ -15,6 +15,7 @@ import { ChevronsLeftRight as LeftRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOutAccount } from "@/libs/appwrite/api";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -72,8 +73,13 @@ const UserItem = (props: Props) => {
         <DropdownMenuItem>
           <Button
             onClick={() => {
-              signOutAccount().then((res) => {
-                if (res) router.push("/");
+              const promise = signOutAccount().then(() => {
+                router.push("/");
+              });
+              toast.promise(promise, {
+                loading: "Signing out..🙂",
+                success: "Successfully Logged out! 📤",
+                error: "unable to log out. 😢",
               });
             }}
             variant="ghost"
