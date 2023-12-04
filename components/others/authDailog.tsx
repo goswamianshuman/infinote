@@ -13,11 +13,11 @@ type DailogProps = {
 };
 
 export function AuthDailog(props: DailogProps) {
-  const handleGoogleAuth = async () => {
-    await signInAccount({ provider: "google" });
+  const handleGoogleAuth = () => {
+    signInAccount({ provider: "google" });
   };
-  const handleGithubAuth = async () => {
-    await signInAccount({ provider: "github" });
+  const handleGithubAuth = () => {
+    signInAccount({ provider: "github" });
   };
 
   return (
