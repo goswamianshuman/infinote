@@ -56,7 +56,7 @@ const PreviewPage = () => {
   if (!doc.isPublished) throw Error("page not found");
 
   return (
-    <div className="pb-40">
+    <div className="pb-40 min-h-screen">
       <Cover preview url={doc?.coverImage} />
       <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
         <Toolbar preview initialData={doc} />
