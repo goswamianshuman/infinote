@@ -11,8 +11,8 @@ export function signInAccount({ provider }: { provider: string }) {
   try {
     const session = account.createOAuth2Session(
       provider,
-      `${process.env.NEXT_PUBLIC_WEBSITE_URL}/dashboard`,
-      `${process.env.NEXT_PUBLIC_WEBSITE_URL}/`,
+      `${process.env.NEXT_PUBLIC_WEBSITE_URL as string}/dashboard`,
+      `${process.env.NEXT_PUBLIC_WEBSITE_URL as string}/`,
       []
     );
 
