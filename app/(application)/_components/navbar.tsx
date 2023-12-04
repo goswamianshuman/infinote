@@ -8,6 +8,7 @@ import Title from "./title";
 import Banner from "./banner";
 import Menu from "./menu";
 import { useTrigger } from "@/hooks/useTrigger";
+import Publish from "@/components/others/publish";
 
 type Props = {
   isCollapsed: boolean;
@@ -57,6 +58,7 @@ const Navbar = ({ isCollapsed, onResetWidth }: Props) => {
         <div className="flex items-center justify-between w-full">
           <Title initialData={doc} />
           <div className="flex items-center gap-x-2">
+            <Publish initalData={doc} />
             <Menu documentId={doc.$id} />
           </div>
         </div>

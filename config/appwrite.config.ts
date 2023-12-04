@@ -7,7 +7,6 @@ export const appwriteConfig = {
   usersCollectionId: process.env.NEXT_PUBLIC_USER_COLLECTION_ID as string,
   documentsCollectionId: process.env
     .NEXT_PUBLIC_API_DOCUMENTS_COLLECTION_ID as string,
-  apiKey: process.env.NEXT_PUBLIC_API_KEY as string,
   storageId: process.env.NEXT_PUBLIC_STORAGE_ID as string,
 };
 
