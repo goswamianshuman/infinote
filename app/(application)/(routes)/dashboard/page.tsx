@@ -57,8 +57,6 @@ const Dashboard = (props: Props) => {
         <BsPlusCircle className="h-4 w-4" />
         create a note
       </Button>
-
-      {/* <img src={avatar.getInitials()} alt="" srcset="" /> */}
     </div>
   );
 };

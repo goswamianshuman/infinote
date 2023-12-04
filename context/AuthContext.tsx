@@ -22,8 +22,7 @@ type AuthProps = {
 
 export const AuthContextProvider = ({ children }: AuthProps) => {
   const [user, setUser] = useState<any>(null);
-
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const fetchData = async ({ res }: { res: any }) => {
@@ -44,25 +43,16 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
   };
 
   useEffect(() => {
-    const unsubscribe = () => {
-      getAccount()
-        .then((res) => {
-          // console.log("this is response: ", res);
-          if (res) {
-            fetchData({ res });
-          } else {
-            setUser(null);
-            router.push("/");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setUser(null);
-          router.push("/");
-        });
-    };
-
-    return () => unsubscribe();
+    setLoading(true);
+    getAccount()
+      .then((res) => {
+        fetchData({ res });
+      })
+      .catch((err) => {
+        console.log(err);
+        setUser(null);
+        router.push("/");
+      });
   }, []);
 
   return (
