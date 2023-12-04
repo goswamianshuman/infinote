@@ -22,7 +22,7 @@ type AuthProps = {
 
 export const AuthContextProvider = ({ children }: AuthProps) => {
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const fetchData = async ({ res }: { res: any }) => {
@@ -43,7 +43,6 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
   };
 
   useEffect(() => {
-    setLoading(true);
     getAccount()
       .then((res) => {
         fetchData({ res });
