@@ -32,12 +32,10 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
     if (!userExists) {
       createUserAccount({ currentUser: res }).then((data) => {
         setUser(data);
-        // console.log("posting data: ", data);
         setLoading(false);
       });
     } else {
       setUser(fetchCurrentUser);
-      // console.log("currentUser: ", fetchCurrentUser);
       setLoading(false);
     }
   };
@@ -45,6 +43,11 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
   useEffect(() => {
     getAccount()
       .then((res) => {
+        console.log(res);
+        if (res === undefined || res === null) {
+          setUser(null);
+          // router.push("/");
+        }
         fetchData({ res });
       })
       .catch((err) => {
