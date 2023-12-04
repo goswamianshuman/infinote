@@ -55,6 +55,7 @@ export async function createUserAccount({ currentUser }: { currentUser: any }) {
     return newUser;
   } catch (error) {
     console.log(error);
+
     return error;
   }
 }
@@ -151,25 +152,6 @@ export async function createDocument(doc: NewDocProp) {
     return newDoc;
   } catch (error) {
     console.log(error);
-    return;
-  }
-}
-
-export async function getUserDocuments(userId?: string) {
-  try {
-    if (!userId) return;
-
-    const document = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.documentsCollectionId,
-      [Query.equal("doc_creator", userId), Query.orderDesc("$createdAt")]
-    );
-
-    if (!document) throw Error;
-
-    return document;
-  } catch (error) {
-    console.log(error);
   }
 }
 
@@ -212,9 +194,6 @@ export async function getDocumentbyId(documentId?: string) {
   if (!documentId) throw Error;
 
   try {
-    const getAcc = await getAccount();
-    const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
     const document = await databases.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.documentsCollectionId,
@@ -227,14 +206,6 @@ export async function getDocumentbyId(documentId?: string) {
 
     if (document.isPublished && !document.isArchived) {
       return document;
-    }
-
-    if (!currentUser) throw Error;
-
-    const userId = currentUser.$id;
-
-    if (document.doc_creator.$id !== userId) {
-      throw new Error("Unauthorized");
     }
 
     return document;
@@ -383,11 +354,6 @@ export async function restoreDocument(documentId?: string) {
 
 export async function removeDocument(documentId?: string) {
   try {
-    const getAcc = await getAccount();
-    const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-    if (!currentUser) throw new Error("Unauthenticated");
-
     const existingDocument = await getDocumentbyId(documentId);
 
     if (!existingDocument) throw new Error("Not found");
@@ -444,39 +410,6 @@ export async function getDocumentForSearching() {
   return doc.documents;
 }
 
-// export async function getDocByIdMain(documentId: string) {
-//   try {
-//     const getAcc = await getAccount();
-//     const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-//     const document = await databases.getDocument(
-//       appwriteConfig.databaseId,
-//       appwriteConfig.documentsCollectionId,
-//       documentId
-//     );
-
-//     if (!document) {
-//       throw new Error("Not found");
-//     }
-
-//     if (document.isPublished && !document.isArchived) {
-//       return document;
-//     }
-
-//     if (!currentUser) throw Error;
-
-//     const userId = currentUser.$id;
-
-//     if (document.doc_creator !== userId) {
-//       throw new Error("Unauthorized");
-//     }
-
-//     return document;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
 type UpdateProps = {
   documentId: string;
   title?: string;
@@ -488,24 +421,7 @@ type UpdateProps = {
 
 export async function updateDocument(props: UpdateProps) {
   try {
-    const getAcc = await getAccount();
-    const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-    if (!currentUser) throw Error;
-
-    const userId = currentUser.$id;
-
     const { documentId, ...rest } = props;
-
-    const existingDocument = await getDocumentbyId(documentId);
-
-    if (!existingDocument) {
-      throw new Error("Not found");
-    }
-
-    if (existingDocument.doc_creator.$id !== userId) {
-      throw new Error("Unauthorized");
-    }
 
     const document = await databases.updateDocument(
       appwriteConfig.databaseId,
@@ -524,23 +440,6 @@ export async function updateDocument(props: UpdateProps) {
 
 export async function removeIcon(documentId: string) {
   try {
-    const getAcc = await getAccount();
-    const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-    if (!currentUser) throw Error;
-
-    const userId = currentUser.$id;
-
-    const existingDocument = await getDocumentbyId(documentId);
-
-    if (!existingDocument) {
-      throw new Error("Not found");
-    }
-
-    if (existingDocument.doc_creator.$id !== userId) {
-      throw new Error("Unauthorized");
-    }
-
     const document = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.documentsCollectionId,
@@ -558,11 +457,6 @@ export async function removeIcon(documentId: string) {
 
 export async function uploadFile(file: File) {
   try {
-    const getAcc = await getAccount();
-    const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-    if (!currentUser) throw Error;
-
     const uploadedFile = await storage.createFile(
       appwriteConfig.storageId,
       ID.unique(),
@@ -616,21 +510,10 @@ export async function deleteFile(documentId: string, fileId: string) {
 
 export async function uploadFileToDoc(documentId: string, file: File) {
   try {
-    const getAcc = await getAccount();
-    const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-    if (!currentUser) throw Error;
-
-    const userId = currentUser.$id;
-
     const existingDocument = await getDocumentbyId(documentId);
 
     if (!existingDocument) {
       throw new Error("Not found");
-    }
-
-    if (existingDocument.doc_creator.$id !== userId) {
-      throw new Error("Unauthorized");
     }
 
     const uploadedFile = await uploadFile(file);
@@ -661,21 +544,10 @@ export async function uploadFileToDoc(documentId: string, file: File) {
 }
 
 export async function replaceFileInDoc(documentId: string, file: File) {
-  const getAcc = await getAccount();
-  const currentUser = await getCurrentUser({ currentAccount: getAcc });
-
-  if (!currentUser) throw Error;
-
-  const userId = currentUser.$id;
-
   const existingDocument = await getDocumentbyId(documentId);
 
   if (!existingDocument) {
     throw new Error("Not found");
-  }
-
-  if (existingDocument.doc_creator.$id !== userId) {
-    throw new Error("Unauthorized");
   }
 
   if (!existingDocument.coverImage && !existingDocument.coverImageId) {

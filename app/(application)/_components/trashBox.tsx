@@ -36,7 +36,8 @@ const TrashBox = (props: Props) => {
     documentId: string
   ) => {
     e.stopPropagation();
-    const restore = restoreDocument(documentId).then(() => {
+    const restore = restoreDocument(documentId).then((res) => {
+      router.push(`/dashboard/documents/${res?.$id}`);
       trigger.activate();
     });
 
@@ -49,6 +50,7 @@ const TrashBox = (props: Props) => {
 
   const handleRemove = async (documentId: string) => {
     const documents = removeDocument(documentId).then(() => {
+      router.push("/dashboard");
       trigger.activate();
     });
 

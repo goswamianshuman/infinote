@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontalIcon } from "lucide-react";
 import { BsTrash } from "react-icons/bs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTrigger } from "@/hooks/useTrigger";
 
 type Props = {
   documentId: string;
@@ -24,15 +25,19 @@ type Props = {
 const Menu = ({ documentId }: Props) => {
   const router = useRouter();
   const { user }: any = useAuthContext();
+  const trigger = useTrigger();
 
   const handleArchive = () => {
-    const archive = setDocumentAsArchive(documentId);
+    const archive = setDocumentAsArchive(documentId).then(() => {
+      router.push("/dashboard");
+      trigger.activate();
+    });
+
     toast.promise(archive, {
       loading: "Moving to trash... 🙂",
       success: "Note moved to trash! 🚮",
       error: "Failed to archive note. 😢",
     });
-    router.push("/dashboard");
   };
 
   return (

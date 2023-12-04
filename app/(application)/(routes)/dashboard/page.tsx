@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BsPlusCircle } from "react-icons/bs";
-import { onCreate } from "@/utils/actionFunctions";
 import { useTrigger } from "@/hooks/useTrigger";
+import { createDocument } from "@/libs/appwrite/api";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -16,8 +17,20 @@ const Dashboard = (props: Props) => {
   const router = useRouter();
   const trigger = useTrigger();
 
-  const handleCreate = async () => {
-    onCreate({ user_id: user?.$id, title: "Untitled" });
+  const handleCreate = () => {
+    const createNewDocument = createDocument({
+      userId: user.$id,
+      title: "Untitled",
+    }).then((res) => {
+      router.push(`/dashboard/documents/${res?.$id}`);
+    });
+
+    toast.promise(createNewDocument, {
+      loading: "Creating note for you... 👾",
+      success: "New note created for you! 📓",
+      error: "Failed to create note 😢",
+    });
+
     trigger.activate();
   };
 

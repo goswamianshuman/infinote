@@ -18,41 +18,36 @@ type Props = {
 
 const Banner = ({ documentId }: Props) => {
   const trigger = useTrigger();
-  const [doc, setDoc] = useState<any>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const document = await getDocumentbyId(documentId as string);
-      setDoc(document);
-    };
-
-    fetchData();
-  });
-
-  const handleRestore = () => {
-    const restore = restoreDocument(documentId);
+  const handleRestore = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    documentId: string
+  ) => {
+    e.stopPropagation();
+    const restore = restoreDocument(documentId).then((res) => {
+      router.push(`/dashboard/documents/${res?.$id}`);
+      trigger.activate();
+    });
 
     toast.promise(restore, {
       loading: "Restoring note... ⏪",
       success: "Note restored successfully! 📓",
       error: "Failed to restore note 😢",
     });
-
-    trigger.activate();
   };
 
-  const handleRemove = () => {
-    const documents = removeDocument(documentId);
+  const handleRemove = async (documentId: string) => {
+    const documents = removeDocument(documentId).then(() => {
+      router.push("/dashboard");
+      trigger.activate();
+    });
 
     toast.promise(documents, {
       loading: "deleting note permanently... ⏪",
       success: "Note deleted successfully! 📓",
       error: "Failed to delete note 😢",
     });
-
-    trigger.activate();
-    router.push("/dashboard");
   };
 
   return (
@@ -61,13 +56,13 @@ const Banner = ({ documentId }: Props) => {
 
       <Button
         size="sm"
-        onClick={handleRestore}
+        onClick={(e) => handleRestore(e, documentId as string)}
         variant={"outline"}
         className="border-white bg-transparent hover:bg-primary/5 text-white hover:text-white p-1 px-2 h-auto font-normal"
       >
         Restore
       </Button>
-      <ConfirmDailog onConfirm={() => handleRemove}>
+      <ConfirmDailog onConfirm={() => handleRemove(documentId as string)}>
         <Button
           size="sm"
           variant={"default"}

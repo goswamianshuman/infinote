@@ -8,7 +8,7 @@ import {
   Search,
   Settings,
 } from "lucide-react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./userItem";
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/popover";
 import { PlusCircle } from "lucide-react";
 import Item from "./item";
-import { onCreate } from "@/utils/actionFunctions";
 import DocumentList from "./documentList";
 import { BsTrash } from "react-icons/bs";
 import TrashBox from "./trashBox";
@@ -28,6 +27,8 @@ import { useSearch } from "@/hooks/useSearch";
 import { useSettings } from "@/hooks/useSettings";
 import Navbar from "./navbar";
 import { useTrigger } from "@/hooks/useTrigger";
+import { createDocument } from "@/libs/appwrite/api";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -44,6 +45,7 @@ const Sidebar = (props: Props) => {
   const search = useSearch();
   const settings = useSettings();
   const trigger = useTrigger();
+  const router = useRouter();
 
   useEffect(() => {
     if (isMobile) {
@@ -121,7 +123,19 @@ const Sidebar = (props: Props) => {
   };
 
   const handleCreate = () => {
-    onCreate({ user_id: user?.$id, title: "Untitled" });
+    const createNewDocument = createDocument({
+      userId: user.$id,
+      title: "Untitled",
+    }).then((res) => {
+      router.push(`/dashboard/documents/${res?.$id}`);
+    });
+
+    toast.promise(createNewDocument, {
+      loading: "Creating note for you... 👾",
+      success: "New note created for you! 📓",
+      error: "Failed to create note 😢",
+    });
+
     trigger.activate();
   };
 

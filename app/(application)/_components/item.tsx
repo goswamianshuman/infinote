@@ -64,13 +64,13 @@ const Item = ({
   };
 
   // archive function
-
   const handleArchive = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e?.stopPropagation();
 
     if (!documentId) return;
 
     const promise = setDocumentAsArchive(documentId).then(() => {
+      router.push("/dashboard");
       trigger.activate();
     });
 
@@ -97,7 +97,7 @@ const Item = ({
         onExpand?.();
         trigger.activate();
       }
-      // router.push(`/dashboard/documents/${doc?.$id}`);
+      router.push(`/dashboard/documents/${doc?.$id}`);
     });
 
     toast.promise(createNewDocument, {

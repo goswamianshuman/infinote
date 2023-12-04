@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { createDocument } from "@/libs/appwrite/api";
+import { useRouter } from "next/navigation";
 type onCreateProps = {
   title: string;
   user_id: string;
@@ -33,7 +34,7 @@ export const onCreate = ({
     isArchived,
     isPublished,
     parentDocument,
-  })
+  });
 
   toast.promise(createNewDocument, {
     loading: "Creating note for you... 👾",

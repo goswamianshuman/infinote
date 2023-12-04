@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCoverImage } from "@/hooks/useCoverImage";
 import { useTrigger } from "@/hooks/useTrigger";
 import { deleteFile, getDocumentbyId } from "@/libs/appwrite/api";
@@ -77,3 +78,7 @@ const Cover = ({ preview, url }: Props) => {
 };
 
 export default Cover;
+
+Cover.Skeleton = function CoverSkeleton() {
+  return <Skeleton className="w-full h-[12vh]" />;
+};
