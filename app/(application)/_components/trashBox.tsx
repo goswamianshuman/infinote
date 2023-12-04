@@ -74,20 +74,16 @@ const TrashBox = (props: Props) => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const document = await searchDocumentByName(search);
-        setFilterDoc(document);
-      } catch (error) {
-        console.error(error);
-      } finally {
+    setLoading(true);
+    searchDocumentByName(search)
+      .then((res) => {
+        setFilterDoc(res);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
         setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [trigger.active]);
+      });
+  }, [search, trigger.active]);
 
   return (
     <div className="text-sm">
