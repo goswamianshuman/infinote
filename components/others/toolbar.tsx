@@ -31,6 +31,7 @@ const Toolbar = ({ initialData, preview }: Props) => {
 
   const disableInput = () => {
     setIsEditing(false);
+    handleSave();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

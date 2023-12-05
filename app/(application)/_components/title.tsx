@@ -25,6 +25,7 @@ const Title = ({ initialData }: Props) => {
 
   const disableInput = () => {
     setIsEditing(false);
+    handleSave();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
