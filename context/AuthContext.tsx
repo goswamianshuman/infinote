@@ -42,13 +42,8 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
 
   useEffect(() => {
     getAccount()
-      .then((res) => {
-        if (res?.$id){
+      .then((res) => { 
           fetchData({ res });
-        } else {
-          setUser(null);
-          router.push("/");
-        }
       })
       .catch((err) => {
         console.log(err);
