@@ -43,7 +43,7 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
   useEffect(() => {
     getAccount()
       .then((res) => {
-        if (!!res) {
+        if (res?.$id){
           fetchData({ res });
         } else {
           setUser(null);
