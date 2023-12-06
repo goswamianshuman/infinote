@@ -34,7 +34,6 @@ export async function signOutAccount() {
 export async function getAccount() {
   try {
     const currentAccount = await account.get();
-
     return currentAccount;
   } catch (error) {
     console.error(error);
