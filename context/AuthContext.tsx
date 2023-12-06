@@ -42,14 +42,20 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
 
   useEffect(() => {
     getAccount()
-      .then((res) => { 
-          fetchData({ res });
-      })
-      .catch((err) => {
-        console.log(err);
-        setUser(null);
-        router.push("/");
-      });
+        .then((res) => {
+          // console.log("this is response: ", res);
+          if (res) {
+            fetchData({ res });
+          } else {
+            setUser(null);
+            router.push("/");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setUser(null);
+          router.push("/");
+        });
   }, []);
 
   return (
