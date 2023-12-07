@@ -46,6 +46,7 @@ export const AuthContextProvider = ({ children }: AuthProps) => {
         console.log(res);
         if (res === undefined) {
           setUser(null);
+          alert("there was some error from Apprite: ", res);
           router.push("/");
         } else {
           fetchData({ res });
